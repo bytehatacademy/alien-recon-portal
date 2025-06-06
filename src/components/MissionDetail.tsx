@@ -1,9 +1,10 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Download, Flag, CheckCircle, XCircle, Clock, Trophy } from 'lucide-react';
+import { ArrowLeft, Download, Flag, CheckCircle, XCircle, Clock, Trophy, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface MissionDetailProps {
@@ -60,14 +61,14 @@ const MissionDetail = ({ mission, onBack, user }: MissionDetailProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="container mx-auto max-w-4xl">
         {/* Header */}
         <div className="mb-8">
           <Button 
             onClick={onBack}
             variant="ghost" 
-            className="text-green-400 hover:text-green-300 mb-4 cyber-border"
+            className="text-primary hover:text-primary/80 mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
@@ -75,10 +76,10 @@ const MissionDetail = ({ mission, onBack, user }: MissionDetailProps) => {
           
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-4xl font-bold text-green-400 neon-text mb-2">{mission.title}</h1>
-              <p className="text-cyan-400">{mission.category} • {mission.estimatedTime}</p>
+              <h1 className="text-4xl font-bold text-foreground mb-2">{mission.title}</h1>
+              <p className="text-muted-foreground">{mission.category} • {mission.estimatedTime}</p>
             </div>
-            <Badge className={`${getDifficultyColor(mission.difficulty)} text-white neon-glow`}>
+            <Badge className={`${getDifficultyColor(mission.difficulty)} text-white`}>
               {mission.difficulty}
             </Badge>
           </div>
@@ -86,64 +87,64 @@ const MissionDetail = ({ mission, onBack, user }: MissionDetailProps) => {
 
         {/* Mission Info */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <Card className="lg:col-span-2 bg-slate-800/50 border-green-400/30 cyber-border">
+          <Card className="lg:col-span-2">
             <CardHeader>
-              <CardTitle className="text-green-400 flex items-center neon-text">
-                <Flag className="w-5 h-5 text-green-400 mr-2" />
+              <CardTitle className="text-foreground flex items-center">
+                <Flag className="w-5 h-5 mr-2" />
                 Mission Brief
               </CardTitle>
             </CardHeader>
-            <CardContent className="text-gray-300">
+            <CardContent className="text-muted-foreground">
               <p className="mb-4">{mission.description}</p>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm">
                 Your mission is to analyze the provided evidence and extract the hidden flag. 
-                The flag format follows the pattern: <code className="bg-slate-700 px-2 py-1 rounded text-green-400">ARLab{'{flag_content}'}</code>
+                The flag format follows the pattern: <code className="bg-muted px-2 py-1 rounded text-primary">ARLab{'{flag_content}'}</code>
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800/50 border-blue-400/30 cyber-border">
+          <Card>
             <CardHeader>
-              <CardTitle className="text-blue-400 flex items-center neon-text">
-                <Trophy className="w-5 h-5 text-yellow-400 mr-2" />
+              <CardTitle className="text-foreground flex items-center">
+                <Trophy className="w-5 h-5 mr-2" />
                 Mission Stats
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between">
-                <span className="text-gray-400">Points:</span>
-                <span className="text-yellow-400 font-semibold">{mission.points}</span>
+                <span className="text-muted-foreground">Points:</span>
+                <span className="text-primary font-semibold">{mission.points}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Difficulty:</span>
-                <span className="text-white">{mission.difficulty}</span>
+                <span className="text-muted-foreground">Difficulty:</span>
+                <span className="text-foreground">{mission.difficulty}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Category:</span>
-                <span className="text-green-400">{mission.category}</span>
+                <span className="text-muted-foreground">Category:</span>
+                <span className="text-primary">{mission.category}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Attempts:</span>
-                <span className="text-white">{attempts}</span>
+                <span className="text-muted-foreground">Attempts:</span>
+                <span className="text-foreground">{attempts}</span>
               </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Download Section */}
-        <Card className="bg-slate-800/50 border-purple-400/30 cyber-border mb-8">
+        <Card className="mb-8">
           <CardHeader>
-            <CardTitle className="text-purple-400 flex items-center neon-text">
-              <Download className="w-5 h-5 text-purple-400 mr-2" />
+            <CardTitle className="text-foreground flex items-center">
+              <Download className="w-5 h-5 mr-2" />
               Evidence Files
             </CardTitle>
-            <CardDescription className="text-gray-400">
+            <CardDescription>
               Download the investigation materials to begin your analysis
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Button 
-              className="bg-purple-600 hover:bg-purple-700 text-white cyber-border pulse-neon"
+              className="bg-primary hover:bg-primary/90"
               onClick={() => {
                 toast({
                   title: "Download Started",
@@ -158,13 +159,13 @@ const MissionDetail = ({ mission, onBack, user }: MissionDetailProps) => {
         </Card>
 
         {/* Flag Submission */}
-        <Card className="bg-slate-800/50 border-green-400/30 cyber-border">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-green-400 flex items-center neon-text">
-              <Flag className="w-5 h-5 text-green-400 mr-2" />
+            <CardTitle className="text-foreground flex items-center">
+              <Flag className="w-5 h-5 mr-2" />
               Submit Your Findings
             </CardTitle>
-            <CardDescription className="text-gray-400">
+            <CardDescription>
               Enter the flag you discovered during your investigation
             </CardDescription>
           </CardHeader>
@@ -177,12 +178,12 @@ const MissionDetail = ({ mission, onBack, user }: MissionDetailProps) => {
                     placeholder="ARLab{enter_flag_here}"
                     value={flagInput}
                     onChange={(e) => setFlagInput(e.target.value)}
-                    className="bg-slate-700 border-green-400/30 text-white flex-1 cyber-border"
+                    className="flex-1"
                     disabled={isSubmitting}
                   />
                   <Button 
                     type="submit" 
-                    className="bg-green-600 hover:bg-green-700 cyber-border pulse-neon"
+                    className="bg-primary hover:bg-primary/90"
                     disabled={isSubmitting || !flagInput.trim()}
                   >
                     {isSubmitting ? (
@@ -200,24 +201,24 @@ const MissionDetail = ({ mission, onBack, user }: MissionDetailProps) => {
                 </div>
                 
                 {attempts > 0 && (
-                  <div className="text-sm text-gray-400">
+                  <div className="text-sm text-muted-foreground">
                     Attempts made: {attempts}
                   </div>
                 )}
               </form>
             ) : (
               <div className="text-center py-8">
-                <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4 neon-glow" />
-                <h3 className="text-2xl font-bold text-green-400 neon-text mb-2">Mission Accomplished!</h3>
-                <p className="text-gray-400 mb-4">
+                <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                <h3 className="text-2xl font-bold text-foreground mb-2">Mission Accomplished!</h3>
+                <p className="text-muted-foreground mb-4">
                   Outstanding work, Agent {user?.name}. You've successfully completed this investigation.
                 </p>
-                <div className="text-green-400 font-semibold mb-6 neon-text">
+                <div className="text-primary font-semibold mb-6">
                   +{mission.points} points earned
                 </div>
                 <Button 
                   onClick={handleContinueToNext}
-                  className="bg-blue-600 hover:bg-blue-700 text-white cyber-border pulse-neon"
+                  className="bg-primary hover:bg-primary/90"
                 >
                   <ArrowRight className="w-4 h-4 mr-2" />
                   Continue to Next Mission

@@ -82,10 +82,10 @@ const Dashboard = ({ user, onMissionSelect, completedMissions = [] }: DashboardP
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'Beginner': return 'bg-green-500 neon-glow';
-      case 'Intermediate': return 'bg-yellow-500 neon-glow';
-      case 'Advanced': return 'bg-orange-500 neon-glow';
-      case 'Expert': return 'bg-red-500 neon-glow';
+      case 'Beginner': return 'bg-green-500';
+      case 'Intermediate': return 'bg-yellow-500';
+      case 'Advanced': return 'bg-orange-500';
+      case 'Expert': return 'bg-red-500';
       default: return 'bg-gray-500';
     }
   };
@@ -98,73 +98,73 @@ const Dashboard = ({ user, onMissionSelect, completedMissions = [] }: DashboardP
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'completed': return <CheckCircle className="w-5 h-5 text-green-400 neon-glow" />;
-      case 'available': return <Target className="w-5 h-5 text-blue-400 pulse-neon" />;
+      case 'completed': return <CheckCircle className="w-5 h-5 text-green-500" />;
+      case 'available': return <Target className="w-5 h-5 text-blue-500" />;
       case 'locked': return <Lock className="w-5 h-5 text-gray-400" />;
-      default: return <Clock className="w-5 h-5 text-yellow-400" />;
+      default: return <Clock className="w-5 h-5 text-yellow-500" />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="container mx-auto max-w-6xl">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-4xl font-bold text-green-400 neon-text mb-2">Mission Control</h1>
-              <p className="text-cyan-400">Welcome back, Agent {user?.name}</p>
+              <h1 className="text-4xl font-bold text-foreground mb-2">Mission Control</h1>
+              <p className="text-muted-foreground">Welcome back, Agent {user?.name}</p>
             </div>
             <div className="text-right">
-              <div className="text-3xl font-bold text-green-400 neon-text">{user?.score || 0}</div>
-              <div className="text-sm text-gray-400">Total Score</div>
+              <div className="text-3xl font-bold text-primary">{user?.score || 0}</div>
+              <div className="text-sm text-muted-foreground">Total Score</div>
             </div>
           </div>
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <Card className="bg-slate-800/50 border-green-400/30 cyber-border">
+            <Card>
               <CardContent className="p-4">
                 <div className="flex items-center">
-                  <Shield className="w-8 h-8 text-green-400 mr-3 neon-glow" />
+                  <Shield className="w-8 h-8 text-primary mr-3" />
                   <div>
-                    <div className="text-2xl font-bold text-white">{user?.rank || 'Rookie'}</div>
-                    <div className="text-sm text-gray-400">Current Rank</div>
+                    <div className="text-2xl font-bold text-foreground">{user?.rank || 'Rookie'}</div>
+                    <div className="text-sm text-muted-foreground">Current Rank</div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-slate-800/50 border-blue-400/30 cyber-border">
+            <Card>
               <CardContent className="p-4">
                 <div className="flex items-center">
-                  <Trophy className="w-8 h-8 text-blue-400 mr-3 neon-glow" />
+                  <Trophy className="w-8 h-8 text-primary mr-3" />
                   <div>
-                    <div className="text-2xl font-bold text-white">{completedCount}</div>
-                    <div className="text-sm text-gray-400">Completed</div>
+                    <div className="text-2xl font-bold text-foreground">{completedCount}</div>
+                    <div className="text-sm text-muted-foreground">Completed</div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-slate-800/50 border-purple-400/30 cyber-border">
+            <Card>
               <CardContent className="p-4">
                 <div className="flex items-center">
-                  <Target className="w-8 h-8 text-purple-400 mr-3 neon-glow" />
+                  <Target className="w-8 h-8 text-primary mr-3" />
                   <div>
-                    <div className="text-2xl font-bold text-white">{totalMissions - completedCount}</div>
-                    <div className="text-sm text-gray-400">Remaining</div>
+                    <div className="text-2xl font-bold text-foreground">{totalMissions - completedCount}</div>
+                    <div className="text-sm text-muted-foreground">Remaining</div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-slate-800/50 border-yellow-400/30 cyber-border">
+            <Card>
               <CardContent className="p-4">
                 <div>
-                  <div className="text-lg font-semibold text-white mb-2">Progress</div>
+                  <div className="text-lg font-semibold text-foreground mb-2">Progress</div>
                   <Progress value={progressPercentage} className="h-2" />
-                  <div className="text-sm text-gray-400 mt-1">{Math.round(progressPercentage)}% Complete</div>
+                  <div className="text-sm text-muted-foreground mt-1">{Math.round(progressPercentage)}% Complete</div>
                 </div>
               </CardContent>
             </Card>
@@ -178,7 +178,7 @@ const Dashboard = ({ user, onMissionSelect, completedMissions = [] }: DashboardP
             return (
               <Card 
                 key={mission.id}
-                className={`bg-slate-800/50 border-slate-700 hover:border-green-400/40 transition-all duration-300 cursor-pointer transform hover:scale-105 cyber-border ${
+                className={`hover:shadow-lg transition-all duration-300 cursor-pointer transform hover:scale-105 ${
                   status === 'locked' ? 'opacity-60' : ''
                 }`}
                 onClick={() => status !== 'locked' && onMissionSelect(mission)}
@@ -187,13 +187,13 @@ const Dashboard = ({ user, onMissionSelect, completedMissions = [] }: DashboardP
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center space-x-2">
                       {getStatusIcon(status)}
-                      <CardTitle className="text-white text-lg">{mission.title}</CardTitle>
+                      <CardTitle className="text-foreground text-lg">{mission.title}</CardTitle>
                     </div>
                     <Badge className={`${getDifficultyColor(mission.difficulty)} text-white`}>
                       {mission.difficulty}
                     </Badge>
                   </div>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription>
                     {mission.description}
                   </CardDescription>
                 </CardHeader>
@@ -201,36 +201,36 @@ const Dashboard = ({ user, onMissionSelect, completedMissions = [] }: DashboardP
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-gray-400">Category:</span>
-                      <span className="text-green-400">{mission.category}</span>
+                      <span className="text-muted-foreground">Category:</span>
+                      <span className="text-primary">{mission.category}</span>
                     </div>
                     
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-gray-400">Points:</span>
-                      <span className="text-yellow-400 font-semibold">{mission.points}</span>
+                      <span className="text-muted-foreground">Points:</span>
+                      <span className="text-primary font-semibold">{mission.points}</span>
                     </div>
                     
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-gray-400">Est. Time:</span>
-                      <span className="text-blue-400">{mission.estimatedTime}</span>
+                      <span className="text-muted-foreground">Est. Time:</span>
+                      <span className="text-foreground">{mission.estimatedTime}</span>
                     </div>
 
                     {status === 'available' && (
-                      <div className="flex items-center text-green-400 text-sm pt-2 pulse-neon">
+                      <div className="flex items-center text-primary text-sm pt-2">
                         <Download className="w-4 h-4 mr-1" />
                         Click to start investigation
                       </div>
                     )}
                     
                     {status === 'completed' && (
-                      <div className="text-green-400 text-sm pt-2 flex items-center">
+                      <div className="text-green-500 text-sm pt-2 flex items-center">
                         <CheckCircle className="w-4 h-4 mr-1" />
                         Investigation Complete
                       </div>
                     )}
                     
                     {status === 'locked' && (
-                      <div className="text-gray-500 text-sm pt-2">
+                      <div className="text-muted-foreground text-sm pt-2">
                         Complete previous missions to unlock
                       </div>
                     )}
