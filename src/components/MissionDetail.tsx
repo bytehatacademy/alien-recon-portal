@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -44,6 +43,12 @@ const MissionDetail = ({ mission, onBack, user }: MissionDetailProps) => {
     }, 1000);
   };
 
+  const handleContinueToNext = () => {
+    // This would add the mission to completed missions and go back to dashboard
+    // The dashboard will then show the next mission as unlocked
+    onBack();
+  };
+
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'Beginner': return 'bg-green-500';
@@ -62,7 +67,7 @@ const MissionDetail = ({ mission, onBack, user }: MissionDetailProps) => {
           <Button 
             onClick={onBack}
             variant="ghost" 
-            className="text-green-400 hover:text-green-300 mb-4"
+            className="text-green-400 hover:text-green-300 mb-4 cyber-border"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
@@ -70,10 +75,10 @@ const MissionDetail = ({ mission, onBack, user }: MissionDetailProps) => {
           
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-4xl font-bold text-white mb-2">{mission.title}</h1>
-              <p className="text-gray-400">{mission.category} • {mission.estimatedTime}</p>
+              <h1 className="text-4xl font-bold text-green-400 neon-text mb-2">{mission.title}</h1>
+              <p className="text-cyan-400">{mission.category} • {mission.estimatedTime}</p>
             </div>
-            <Badge className={`${getDifficultyColor(mission.difficulty)} text-white`}>
+            <Badge className={`${getDifficultyColor(mission.difficulty)} text-white neon-glow`}>
               {mission.difficulty}
             </Badge>
           </div>
@@ -81,9 +86,9 @@ const MissionDetail = ({ mission, onBack, user }: MissionDetailProps) => {
 
         {/* Mission Info */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <Card className="lg:col-span-2 bg-slate-800/50 border-green-400/20">
+          <Card className="lg:col-span-2 bg-slate-800/50 border-green-400/30 cyber-border">
             <CardHeader>
-              <CardTitle className="text-white flex items-center">
+              <CardTitle className="text-green-400 flex items-center neon-text">
                 <Flag className="w-5 h-5 text-green-400 mr-2" />
                 Mission Brief
               </CardTitle>
@@ -92,14 +97,14 @@ const MissionDetail = ({ mission, onBack, user }: MissionDetailProps) => {
               <p className="mb-4">{mission.description}</p>
               <p className="text-sm text-gray-400">
                 Your mission is to analyze the provided evidence and extract the hidden flag. 
-                The flag format follows the pattern: <code className="bg-slate-700 px-2 py-1 rounded">ARLab{'{flag_content}'}</code>
+                The flag format follows the pattern: <code className="bg-slate-700 px-2 py-1 rounded text-green-400">ARLab{'{flag_content}'}</code>
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800/50 border-blue-400/20">
+          <Card className="bg-slate-800/50 border-blue-400/30 cyber-border">
             <CardHeader>
-              <CardTitle className="text-white flex items-center">
+              <CardTitle className="text-blue-400 flex items-center neon-text">
                 <Trophy className="w-5 h-5 text-yellow-400 mr-2" />
                 Mission Stats
               </CardTitle>
@@ -126,9 +131,9 @@ const MissionDetail = ({ mission, onBack, user }: MissionDetailProps) => {
         </div>
 
         {/* Download Section */}
-        <Card className="bg-slate-800/50 border-purple-400/20 mb-8">
+        <Card className="bg-slate-800/50 border-purple-400/30 cyber-border mb-8">
           <CardHeader>
-            <CardTitle className="text-white flex items-center">
+            <CardTitle className="text-purple-400 flex items-center neon-text">
               <Download className="w-5 h-5 text-purple-400 mr-2" />
               Evidence Files
             </CardTitle>
@@ -138,7 +143,7 @@ const MissionDetail = ({ mission, onBack, user }: MissionDetailProps) => {
           </CardHeader>
           <CardContent>
             <Button 
-              className="bg-purple-600 hover:bg-purple-700 text-white"
+              className="bg-purple-600 hover:bg-purple-700 text-white cyber-border pulse-neon"
               onClick={() => {
                 toast({
                   title: "Download Started",
@@ -153,9 +158,9 @@ const MissionDetail = ({ mission, onBack, user }: MissionDetailProps) => {
         </Card>
 
         {/* Flag Submission */}
-        <Card className="bg-slate-800/50 border-green-400/20">
+        <Card className="bg-slate-800/50 border-green-400/30 cyber-border">
           <CardHeader>
-            <CardTitle className="text-white flex items-center">
+            <CardTitle className="text-green-400 flex items-center neon-text">
               <Flag className="w-5 h-5 text-green-400 mr-2" />
               Submit Your Findings
             </CardTitle>
@@ -172,12 +177,12 @@ const MissionDetail = ({ mission, onBack, user }: MissionDetailProps) => {
                     placeholder="ARLab{enter_flag_here}"
                     value={flagInput}
                     onChange={(e) => setFlagInput(e.target.value)}
-                    className="bg-slate-700 border-green-400/20 text-white flex-1"
+                    className="bg-slate-700 border-green-400/30 text-white flex-1 cyber-border"
                     disabled={isSubmitting}
                   />
                   <Button 
                     type="submit" 
-                    className="bg-green-600 hover:bg-green-700"
+                    className="bg-green-600 hover:bg-green-700 cyber-border pulse-neon"
                     disabled={isSubmitting || !flagInput.trim()}
                   >
                     {isSubmitting ? (
@@ -202,14 +207,21 @@ const MissionDetail = ({ mission, onBack, user }: MissionDetailProps) => {
               </form>
             ) : (
               <div className="text-center py-8">
-                <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold text-white mb-2">Mission Accomplished!</h3>
+                <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4 neon-glow" />
+                <h3 className="text-2xl font-bold text-green-400 neon-text mb-2">Mission Accomplished!</h3>
                 <p className="text-gray-400 mb-4">
                   Outstanding work, Agent {user?.name}. You've successfully completed this investigation.
                 </p>
-                <div className="text-green-400 font-semibold">
+                <div className="text-green-400 font-semibold mb-6 neon-text">
                   +{mission.points} points earned
                 </div>
+                <Button 
+                  onClick={handleContinueToNext}
+                  className="bg-blue-600 hover:bg-blue-700 text-white cyber-border pulse-neon"
+                >
+                  <ArrowRight className="w-4 h-4 mr-2" />
+                  Continue to Next Mission
+                </Button>
               </div>
             )}
           </CardContent>
