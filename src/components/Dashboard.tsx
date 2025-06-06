@@ -157,7 +157,7 @@ const Dashboard = ({ user, onMissionSelect, completedMissions = [] }: DashboardP
                   </div>
                 </div>
               </CardContent>
-            </div>
+            </Card>
 
             <Card className="bg-slate-800/50 border-yellow-400/30 cyber-border">
               <CardContent className="p-4">
