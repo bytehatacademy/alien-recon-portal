@@ -1,32 +1,61 @@
 
 import { useState } from 'react';
 import LandingPage from '../components/LandingPage';
-import StoryPage from '../components/StoryPage';
-import ChallengePage from '../components/ChallengePage';
+import AuthModal from '../components/AuthModal';
+import Dashboard from '../components/Dashboard';
+import MissionDetail from '../components/MissionDetail';
 
 const Index = () => {
-  const [currentView, setCurrentView] = useState<'landing' | 'story' | 'challenge'>('landing');
+  const [currentView, setCurrentView] = useState('landing');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [selectedMission, setSelectedMission] = useState(null);
+  const [user, setUser] = useState(null);
+
+  const handleAuthSuccess = (userData) => {
+    setIsAuthenticated(true);
+    setUser(userData);
+    setShowAuthModal(false);
+    setCurrentView('dashboard');
+  };
 
   const handleBeginInvestigation = () => {
-    setCurrentView('story');
+    if (isAuthenticated) {
+      setCurrentView('dashboard');
+    } else {
+      setShowAuthModal(true);
+    }
   };
 
-  const handleStartChallenge = () => {
-    setCurrentView('challenge');
+  const handleMissionSelect = (mission) => {
+    setSelectedMission(mission);
+    setCurrentView('mission');
   };
 
-  const handleBackToStory = () => {
-    setCurrentView('story');
+  const handleBackToDashboard = () => {
+    setCurrentView('dashboard');
+    setSelectedMission(null);
   };
 
   const renderCurrentView = () => {
     switch (currentView) {
       case 'landing':
         return <LandingPage onBeginInvestigation={handleBeginInvestigation} />;
-      case 'story':
-        return <StoryPage onStartChallenge={handleStartChallenge} />;
-      case 'challenge':
-        return <ChallengePage onBack={handleBackToStory} />;
+      case 'dashboard':
+        return (
+          <Dashboard 
+            user={user}
+            onMissionSelect={handleMissionSelect}
+          />
+        );
+      case 'mission':
+        return (
+          <MissionDetail 
+            mission={selectedMission}
+            onBack={handleBackToDashboard}
+            user={user}
+          />
+        );
       default:
         return <LandingPage onBeginInvestigation={handleBeginInvestigation} />;
     }
@@ -35,6 +64,14 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {renderCurrentView()}
+      
+      {showAuthModal && (
+        <AuthModal
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+          onAuthSuccess={handleAuthSuccess}
+        />
+      )}
     </div>
   );
 };
