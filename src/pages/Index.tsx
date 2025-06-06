@@ -5,7 +5,7 @@ import StoryPage from '../components/StoryPage';
 import ChallengePage from '../components/ChallengePage';
 
 const Index = () => {
-  const [currentView, setCurrentView] = useState<'landing' | 'story' | challenge'>('landing');
+  const [currentView, setCurrentView] = useState<'landing' | 'story' | 'challenge'>('landing');
 
   const handleBeginInvestigation = () => {
     setCurrentView('story');
