@@ -61,90 +61,90 @@ const MissionDetail = ({ mission, onBack, user }: MissionDetailProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-screen bg-slate-900 p-4 md:p-6">
       <div className="container mx-auto max-w-4xl">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6 md:mb-8">
           <Button 
             onClick={onBack}
             variant="ghost" 
-            className="text-primary hover:text-primary/80 mb-4"
+            className="text-green-400 hover:text-green-300 hover:bg-slate-800/50 mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
           </Button>
           
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
             <div>
-              <h1 className="text-4xl font-bold text-foreground mb-2">{mission.title}</h1>
-              <p className="text-muted-foreground">{mission.category} • {mission.estimatedTime}</p>
+              <h1 className="text-2xl md:text-4xl font-bold text-green-400 mb-2">{mission.title}</h1>
+              <p className="text-slate-400 text-sm md:text-base">{mission.category} • {mission.estimatedTime}</p>
             </div>
-            <Badge className={`${getDifficultyColor(mission.difficulty)} text-white`}>
+            <Badge className={`${getDifficultyColor(mission.difficulty)} text-white self-start md:self-center`}>
               {mission.difficulty}
             </Badge>
           </div>
         </div>
 
         {/* Mission Info */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <Card className="lg:col-span-2">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
+          <Card className="lg:col-span-2 bg-slate-800/50 border-green-400/20">
             <CardHeader>
-              <CardTitle className="text-foreground flex items-center">
+              <CardTitle className="text-green-400 flex items-center text-lg md:text-xl">
                 <Flag className="w-5 h-5 mr-2" />
                 Mission Brief
               </CardTitle>
             </CardHeader>
-            <CardContent className="text-muted-foreground">
-              <p className="mb-4">{mission.description}</p>
-              <p className="text-sm">
+            <CardContent className="text-slate-300">
+              <p className="mb-4 text-sm md:text-base">{mission.description}</p>
+              <p className="text-xs md:text-sm">
                 Your mission is to analyze the provided evidence and extract the hidden flag. 
-                The flag format follows the pattern: <code className="bg-muted px-2 py-1 rounded text-primary">ARLab{'{flag_content}'}</code>
+                The flag format follows the pattern: <code className="bg-slate-700 px-2 py-1 rounded text-green-400">ARLab{'{flag_content}'}</code>
               </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-slate-800/50 border-purple-400/20">
             <CardHeader>
-              <CardTitle className="text-foreground flex items-center">
+              <CardTitle className="text-purple-400 flex items-center text-lg md:text-xl">
                 <Trophy className="w-5 h-5 mr-2" />
                 Mission Stats
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Points:</span>
-                <span className="text-primary font-semibold">{mission.points}</span>
+              <div className="flex justify-between text-sm md:text-base">
+                <span className="text-slate-400">Points:</span>
+                <span className="text-green-400 font-semibold">{mission.points}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Difficulty:</span>
-                <span className="text-foreground">{mission.difficulty}</span>
+              <div className="flex justify-between text-sm md:text-base">
+                <span className="text-slate-400">Difficulty:</span>
+                <span className="text-white">{mission.difficulty}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Category:</span>
-                <span className="text-primary">{mission.category}</span>
+              <div className="flex justify-between text-sm md:text-base">
+                <span className="text-slate-400">Category:</span>
+                <span className="text-blue-400">{mission.category}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Attempts:</span>
-                <span className="text-foreground">{attempts}</span>
+              <div className="flex justify-between text-sm md:text-base">
+                <span className="text-slate-400">Attempts:</span>
+                <span className="text-white">{attempts}</span>
               </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Download Section */}
-        <Card className="mb-8">
+        <Card className="mb-6 md:mb-8 bg-slate-800/50 border-blue-400/20">
           <CardHeader>
-            <CardTitle className="text-foreground flex items-center">
+            <CardTitle className="text-blue-400 flex items-center text-lg md:text-xl">
               <Download className="w-5 h-5 mr-2" />
               Evidence Files
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-slate-400">
               Download the investigation materials to begin your analysis
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Button 
-              className="bg-primary hover:bg-primary/90"
+              className="bg-blue-500 hover:bg-blue-600 w-full md:w-auto"
               onClick={() => {
                 toast({
                   title: "Download Started",
@@ -159,31 +159,31 @@ const MissionDetail = ({ mission, onBack, user }: MissionDetailProps) => {
         </Card>
 
         {/* Flag Submission */}
-        <Card>
+        <Card className="bg-slate-800/50 border-yellow-400/20">
           <CardHeader>
-            <CardTitle className="text-foreground flex items-center">
+            <CardTitle className="text-yellow-400 flex items-center text-lg md:text-xl">
               <Flag className="w-5 h-5 mr-2" />
               Submit Your Findings
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-slate-400">
               Enter the flag you discovered during your investigation
             </CardDescription>
           </CardHeader>
           <CardContent>
             {!isCompleted ? (
               <form onSubmit={handleFlagSubmit} className="space-y-4">
-                <div className="flex space-x-4">
+                <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
                   <Input
                     type="text"
                     placeholder="ARLab{enter_flag_here}"
                     value={flagInput}
                     onChange={(e) => setFlagInput(e.target.value)}
-                    className="flex-1"
+                    className="flex-1 bg-slate-700 border-slate-600 text-white placeholder-slate-400"
                     disabled={isSubmitting}
                   />
                   <Button 
                     type="submit" 
-                    className="bg-primary hover:bg-primary/90"
+                    className="bg-green-500 hover:bg-green-600 w-full md:w-auto"
                     disabled={isSubmitting || !flagInput.trim()}
                   >
                     {isSubmitting ? (
@@ -201,24 +201,24 @@ const MissionDetail = ({ mission, onBack, user }: MissionDetailProps) => {
                 </div>
                 
                 {attempts > 0 && (
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-slate-400">
                     Attempts made: {attempts}
                   </div>
                 )}
               </form>
             ) : (
               <div className="text-center py-8">
-                <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold text-foreground mb-2">Mission Accomplished!</h3>
-                <p className="text-muted-foreground mb-4">
+                <CheckCircle className="w-12 md:w-16 h-12 md:h-16 text-green-500 mx-auto mb-4" />
+                <h3 className="text-xl md:text-2xl font-bold text-green-400 mb-2">Mission Accomplished!</h3>
+                <p className="text-slate-400 mb-4 text-sm md:text-base">
                   Outstanding work, Agent {user?.name}. You've successfully completed this investigation.
                 </p>
-                <div className="text-primary font-semibold mb-6">
+                <div className="text-green-400 font-semibold mb-6 text-lg md:text-xl">
                   +{mission.points} points earned
                 </div>
                 <Button 
                   onClick={handleContinueToNext}
-                  className="bg-primary hover:bg-primary/90"
+                  className="bg-green-500 hover:bg-green-600 w-full md:w-auto"
                 >
                   <ArrowRight className="w-4 h-4 mr-2" />
                   Continue to Next Mission
