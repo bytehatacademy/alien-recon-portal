@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -78,17 +77,17 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Profile Icon - Top Right */}
+    <div className="min-h-screen bg-background relative">
+      {/* Profile Icon - Fixed Sticky Position */}
       {isAuthenticated && currentView !== 'landing' && (
-        <div className="fixed top-6 right-6 z-40">
+        <div className="fixed top-6 right-6 z-50">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setShowProfileDashboard(true)}
-            className="rounded-full bg-slate-800/80 border border-green-400/30 hover:border-green-400/60 cyber-border"
+            className="rounded-full bg-slate-800/90 border border-green-400/50 hover:border-green-400/80 hover:bg-slate-700/90 transition-all duration-300"
           >
-            <Avatar className="w-8 h-8 border border-green-400 neon-glow">
+            <Avatar className="w-8 h-8 border border-green-400">
               <AvatarImage src={user?.avatar} />
               <AvatarFallback className="bg-slate-700 text-green-400 font-bold text-xs">
                 {user?.name?.slice(0, 2)?.toUpperCase() || 'AG'}
