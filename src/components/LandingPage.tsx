@@ -8,9 +8,9 @@ interface LandingPageProps {
 
 const LandingPage = ({ onBeginInvestigation }: LandingPageProps) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-900 relative overflow-hidden">
       {/* Animated background effects */}
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%239C92AC%22%20fill-opacity%3D%220.1%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%222%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23334155%22%20fill-opacity%3D%220.1%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%222%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
       
       {/* Main content */}
       <div className="relative z-10 container mx-auto px-6 py-20 flex flex-col items-center text-center">
@@ -22,7 +22,7 @@ const LandingPage = ({ onBeginInvestigation }: LandingPageProps) => {
               Alien Recon Lab
             </h1>
           </div>
-          <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
             Discover, Investigate, and Reveal the Alien Infiltration in Earth's Digital Realm
           </p>
         </div>
@@ -32,19 +32,19 @@ const LandingPage = ({ onBeginInvestigation }: LandingPageProps) => {
           <div className="bg-slate-800/50 backdrop-blur-sm border border-green-400/20 rounded-lg p-6 hover:border-green-400/40 transition-all duration-300 hover:scale-105">
             <Target className="w-12 h-12 text-green-400 mb-4 mx-auto" />
             <h3 className="text-xl font-semibold text-white mb-2">Mission-Based CTF</h3>
-            <p className="text-gray-400">Solve cybersecurity challenges through immersive alien-themed scenarios</p>
+            <p className="text-slate-400">Solve cybersecurity challenges through immersive alien-themed scenarios</p>
           </div>
           
           <div className="bg-slate-800/50 backdrop-blur-sm border border-blue-400/20 rounded-lg p-6 hover:border-blue-400/40 transition-all duration-300 hover:scale-105">
             <Zap className="w-12 h-12 text-blue-400 mb-4 mx-auto" />
             <h3 className="text-xl font-semibold text-white mb-2">Real-World Skills</h3>
-            <p className="text-gray-400">Practice OSINT, forensics, network analysis, and threat detection</p>
+            <p className="text-slate-400">Practice OSINT, forensics, network analysis, and threat detection</p>
           </div>
           
           <div className="bg-slate-800/50 backdrop-blur-sm border border-purple-400/20 rounded-lg p-6 hover:border-purple-400/40 transition-all duration-300 hover:scale-105">
             <Users className="w-12 h-12 text-purple-400 mb-4 mx-auto" />
             <h3 className="text-xl font-semibold text-white mb-2">Progressive Learning</h3>
-            <p className="text-gray-400">Advance from Rookie to Elite Agent through challenging modules</p>
+            <p className="text-slate-400">Advance from Rookie to Elite Agent through challenging modules</p>
           </div>
         </div>
 
