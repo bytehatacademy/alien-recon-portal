@@ -1,83 +1,35 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Shield, Trophy, Target, Lock, CheckCircle, Clock, Download, ArrowRight } from 'lucide-react';
+import { Shield, Trophy, Target, Lock, CheckCircle, Clock, Download, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useMissions, useMissionCompletions } from '@/hooks/useMissions';
 
 interface DashboardProps {
   user: any;
   onMissionSelect: (mission: any) => void;
-  completedMissions?: number[];
 }
 
-// Updated missions with proper progression logic
-const missions = [
-  {
-    id: 1,
-    title: "Recon Rumble",
-    description: "Analyze intercepted alien communication patterns to identify infiltration methods.",
-    difficulty: "Beginner",
-    points: 100,
-    estimatedTime: "30 min",
-    fileUrl: "#",
-    flag: "ARLab{welcome_to_the_investigation}",
-    category: "OSINT",
-    unlockRequirement: null // Always unlocked
-  },
-  {
-    id: 2,
-    title: "Packet Puzzle",
-    description: "Examine network traffic to uncover hidden alien data transmissions.",
-    difficulty: "Intermediate",
-    points: 250,
-    estimatedTime: "45 min",
-    fileUrl: "#",
-    flag: "ARLab{network_anomaly_detected}",
-    category: "Network Analysis",
-    unlockRequirement: 1 // Requires mission 1
-  },
-  {
-    id: 3,
-    title: "Memory Maze",
-    description: "Perform memory forensics on an infected system to find alien artifacts.",
-    difficulty: "Advanced",
-    points: 400,
-    estimatedTime: "60 min",
-    fileUrl: "#",
-    flag: "ARLab{memory_corruption_found}",
-    category: "Digital Forensics",
-    unlockRequirement: 2 // Requires mission 2
-  },
-  {
-    id: 4,
-    title: "APT Archive",
-    description: "Investigate an advanced persistent threat with alien origins.",
-    difficulty: "Expert",
-    points: 600,
-    estimatedTime: "90 min",
-    fileUrl: "#",
-    flag: "ARLab{apt_source_identified}",
-    category: "Threat Intelligence",
-    unlockRequirement: 3 // Requires mission 3
-  },
-  {
-    id: 5,
-    title: "Alien OSINT",
-    description: "Use open source intelligence to track alien infiltration activities.",
-    difficulty: "Intermediate",
-    points: 300,
-    estimatedTime: "45 min",
-    fileUrl: "#",
-    flag: "ARLab{osint_investigation_complete}",
-    category: "OSINT",
-    unlockRequirement: 4 // Requires mission 4
-  }
-];
+const Dashboard = ({ user, onMissionSelect }: DashboardProps) => {
+  const { data: missions = [], isLoading: missionsLoading } = useMissions();
+  const { data: completions = [], isLoading: completionsLoading } = useMissionCompletions();
 
-const Dashboard = ({ user, onMissionSelect, completedMissions = [] }: DashboardProps) => {
+  if (missionsLoading || completionsLoading) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 text-green-400 animate-spin mx-auto mb-4" />
+          <p className="text-green-400">Loading mission data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const completedMissionIds = completions.map(c => c.missionId);
   const totalMissions = missions.length;
-  const completedCount = completedMissions.length;
-  const progressPercentage = (completedCount / totalMissions) * 100;
+  const completedCount = completedMissionIds.length;
+  const progressPercentage = totalMissions > 0 ? (completedCount / totalMissions) * 100 : 0;
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -90,9 +42,9 @@ const Dashboard = ({ user, onMissionSelect, completedMissions = [] }: DashboardP
   };
 
   const getMissionStatus = (mission: any) => {
-    if (completedMissions.includes(mission.id)) return 'completed';
-    if (!mission.unlockRequirement || completedMissions.includes(mission.unlockRequirement)) return 'available';
-    return 'locked';
+    if (completedMissionIds.includes(mission._id)) return 'completed';
+    // For now, all missions are available - you can add unlock logic later
+    return 'available';
   };
 
   const getStatusIcon = (status: string) => {
@@ -176,7 +128,7 @@ const Dashboard = ({ user, onMissionSelect, completedMissions = [] }: DashboardP
             const status = getMissionStatus(mission);
             return (
               <Card 
-                key={mission.id}
+                key={mission._id}
                 className={`bg-slate-800/50 border-slate-700/50 hover:border-green-400/50 hover:shadow-lg hover:shadow-green-400/20 transition-all duration-300 cursor-pointer transform hover:scale-105 ${
                   status === 'locked' ? 'opacity-60' : ''
                 }`}

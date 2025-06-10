@@ -5,16 +5,22 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
-import { User, Trophy, Target, Shield, X, Brain, Search, Bug, Zap, Eye, FileSearch, Users } from 'lucide-react';
+import { User, Trophy, Target, Shield, X, Brain, Search, Bug, Zap, Eye, FileSearch, Users, LogOut } from 'lucide-react';
 
 interface ProfileDashboardProps {
   user: any;
   isOpen: boolean;
   onClose: () => void;
+  onLogout: () => void;
 }
 
-const ProfileDashboard = ({ user, isOpen, onClose }: ProfileDashboardProps) => {
+const ProfileDashboard = ({ user, isOpen, onClose, onLogout }: ProfileDashboardProps) => {
   if (!isOpen) return null;
+
+  const handleLogout = () => {
+    onLogout();
+    onClose();
+  };
 
   const skills = [
     { name: 'Threat Hunting', icon: Search, progress: 75, color: 'text-green-400' },
@@ -102,7 +108,7 @@ const ProfileDashboard = ({ user, isOpen, onClose }: ProfileDashboardProps) => {
         </Card>
 
         {/* Recent Achievements */}
-        <Card className="bg-slate-800/50 border-yellow-400/20">
+        <Card className="bg-slate-800/50 border-yellow-400/20 mb-4">
           <CardHeader className="p-3 md:p-4">
             <CardTitle className="text-yellow-400 flex items-center text-sm md:text-base">
               <Trophy className="w-4 h-4 md:w-5 md:h-5 mr-2" />
@@ -113,19 +119,29 @@ const ProfileDashboard = ({ user, isOpen, onClose }: ProfileDashboardProps) => {
             <div className="flex items-center space-x-3 p-2 bg-slate-700/30 rounded">
               <Target className="w-3 h-3 md:w-4 md:h-4 text-green-400" />
               <div className="text-xs md:text-sm">
-                <div className="text-white">Completed: Recon Rumble</div>
-                <div className="text-gray-400 text-xs">+100 points</div>
+                <div className="text-white">Joined the Lab</div>
+                <div className="text-gray-400 text-xs">Welcome Agent!</div>
               </div>
             </div>
             <div className="flex items-center space-x-3 p-2 bg-slate-700/30 rounded">
               <Shield className="w-3 h-3 md:w-4 md:h-4 text-blue-400" />
               <div className="text-xs md:text-sm">
-                <div className="text-white">Rank promoted to Agent</div>
-                <div className="text-gray-400 text-xs">Achievement unlocked</div>
+                <div className="text-white">Clearance Granted</div>
+                <div className="text-gray-400 text-xs">Ready for missions</div>
               </div>
             </div>
           </CardContent>
         </Card>
+
+        {/* Logout Button */}
+        <Button 
+          onClick={handleLogout}
+          variant="destructive"
+          className="w-full"
+        >
+          <LogOut className="w-4 h-4 mr-2" />
+          Logout
+        </Button>
       </div>
     </div>
   );

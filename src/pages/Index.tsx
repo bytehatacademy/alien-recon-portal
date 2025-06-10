@@ -2,28 +2,19 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User } from 'lucide-react';
 import LandingPage from '../components/LandingPage';
 import AuthModal from '../components/AuthModal';
 import Dashboard from '../components/Dashboard';
 import MissionDetail from '../components/MissionDetail';
 import ProfileDashboard from '../components/ProfileDashboard';
+import { useAuth } from '@/hooks/useAuth';
 
 const Index = () => {
+  const { user, isAuthenticated, logout } = useAuth();
   const [currentView, setCurrentView] = useState('landing');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showProfileDashboard, setShowProfileDashboard] = useState(false);
   const [selectedMission, setSelectedMission] = useState(null);
-  const [user, setUser] = useState(null);
-  const [completedMissions, setCompletedMissions] = useState<number[]>([]);
-
-  const handleAuthSuccess = (userData) => {
-    setIsAuthenticated(true);
-    setUser(userData);
-    setShowAuthModal(false);
-    setCurrentView('dashboard');
-  };
 
   const handleBeginInvestigation = () => {
     if (isAuthenticated) {
@@ -33,21 +24,17 @@ const Index = () => {
     }
   };
 
+  const handleAuthSuccess = () => {
+    setShowAuthModal(false);
+    setCurrentView('dashboard');
+  };
+
   const handleMissionSelect = (mission) => {
     setSelectedMission(mission);
     setCurrentView('mission');
   };
 
   const handleBackToDashboard = () => {
-    // When coming back from a completed mission, add it to completed missions
-    if (selectedMission) {
-      setCompletedMissions(prev => {
-        if (!prev.includes(selectedMission.id)) {
-          return [...prev, selectedMission.id];
-        }
-        return prev;
-      });
-    }
     setCurrentView('dashboard');
     setSelectedMission(null);
   };
@@ -61,7 +48,6 @@ const Index = () => {
           <Dashboard 
             user={user}
             onMissionSelect={handleMissionSelect}
-            completedMissions={completedMissions}
           />
         );
       case 'mission':
@@ -112,6 +98,7 @@ const Index = () => {
         user={user}
         isOpen={showProfileDashboard}
         onClose={() => setShowProfileDashboard(false)}
+        onLogout={logout}
       />
     </div>
   );

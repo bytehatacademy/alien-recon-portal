@@ -6,22 +6,22 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Shield, User, Mail, Lock } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAuthSuccess: (user: any) => void;
+  onAuthSuccess: () => void;
 }
 
 const AuthModal = ({ isOpen, onClose, onAuthSuccess }: AuthModalProps) => {
+  const { login, register } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     name: '',
   });
-  const { toast } = useToast();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -34,50 +34,28 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }: AuthModalProps) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate authentication - replace with Supabase integration
-    setTimeout(() => {
-      const mockUser = {
-        id: '1',
-        email: formData.email,
-        name: formData.email.split('@')[0],
-        rank: 'Rookie',
-        score: 0,
-        avatar: null,
-        completedMissions: []
-      };
-      
-      onAuthSuccess(mockUser);
-      toast({
-        title: "Access Granted",
-        description: "Welcome to the Alien Recon Lab, Agent.",
-      });
+    try {
+      const success = await login(formData.email, formData.password);
+      if (success) {
+        onAuthSuccess();
+      }
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate registration - replace with Supabase integration
-    setTimeout(() => {
-      const mockUser = {
-        id: '1',
-        email: formData.email,
-        name: formData.name || formData.email.split('@')[0],
-        rank: 'Rookie',
-        score: 0,
-        avatar: null,
-        completedMissions: []
-      };
-      
-      onAuthSuccess(mockUser);
-      toast({
-        title: "Agent Registered",
-        description: "Your investigation clearance has been approved.",
-      });
+    try {
+      const success = await register(formData.email, formData.name, formData.password);
+      if (success) {
+        onAuthSuccess();
+      }
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   return (

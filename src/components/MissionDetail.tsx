@@ -4,8 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Download, Flag, CheckCircle, XCircle, Clock, Trophy, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Download, Flag, CheckCircle, Clock, Trophy, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { apiService } from '@/services/api';
+import { useAuth } from '@/hooks/useAuth';
 
 interface MissionDetailProps {
   mission: any;
@@ -19,35 +21,56 @@ const MissionDetail = ({ mission, onBack, user }: MissionDetailProps) => {
   const [isCompleted, setIsCompleted] = useState(false);
   const [attempts, setAttempts] = useState(0);
   const { toast } = useToast();
+  const { updateUser } = useAuth();
 
   const handleFlagSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setAttempts(prev => prev + 1);
 
-    // Simulate flag validation - replace with Supabase logic
-    setTimeout(() => {
-      if (flagInput.trim() === mission.flag) {
+    try {
+      const response = await apiService.submitFlag(mission._id, flagInput.trim());
+      
+      if (response.success) {
         setIsCompleted(true);
+        // Update user score
+        if (user && response.data.pointsEarned) {
+          updateUser({
+            ...user,
+            score: (user.score || 0) + response.data.pointsEarned
+          });
+        }
+        
         toast({
           title: "Mission Completed! 🎉",
           description: `Excellent work, Agent! You've earned ${mission.points} points.`,
         });
-      } else {
-        toast({
-          title: "Incorrect Flag",
-          description: "The evidence doesn't match. Keep investigating...",
-          variant: "destructive",
-        });
       }
+    } catch (error: any) {
+      toast({
+        title: "Incorrect Flag",
+        description: error.message || "The evidence doesn't match. Keep investigating...",
+        variant: "destructive",
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
 
   const handleContinueToNext = () => {
-    // This would add the mission to completed missions and go back to dashboard
-    // The dashboard will then show the next mission as unlocked
     onBack();
+  };
+
+  const handleDownload = () => {
+    if (mission.fileUrl && mission.fileUrl !== '#') {
+      // Open the file URL in a new tab
+      window.open(mission.fileUrl, '_blank');
+    } else {
+      toast({
+        title: "Download Started",
+        description: "Evidence package is being prepared...",
+      });
+    }
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -96,6 +119,9 @@ const MissionDetail = ({ mission, onBack, user }: MissionDetailProps) => {
             </CardHeader>
             <CardContent className="text-slate-300">
               <p className="mb-4 text-sm md:text-base">{mission.description}</p>
+              {mission.briefing && (
+                <p className="mb-4 text-sm md:text-base">{mission.briefing}</p>
+              )}
               <p className="text-xs md:text-sm">
                 Your mission is to analyze the provided evidence and extract the hidden flag. 
                 The flag format follows the pattern: <code className="bg-slate-700 px-2 py-1 rounded text-green-400">ARLab{'{flag_content}'}</code>
@@ -145,12 +171,7 @@ const MissionDetail = ({ mission, onBack, user }: MissionDetailProps) => {
           <CardContent>
             <Button 
               className="bg-blue-500 hover:bg-blue-600 w-full md:w-auto"
-              onClick={() => {
-                toast({
-                  title: "Download Started",
-                  description: "Evidence package is being prepared...",
-                });
-              }}
+              onClick={handleDownload}
             >
               <Download className="w-4 h-4 mr-2" />
               Download Evidence Package
