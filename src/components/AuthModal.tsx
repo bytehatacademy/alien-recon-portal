@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Shield, User, Mail, Lock } from 'lucide-react';
+import { Shield, User, Mail, Lock, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 interface AuthModalProps {
@@ -17,6 +17,7 @@ interface AuthModalProps {
 const AuthModal = ({ isOpen, onClose, onAuthSuccess }: AuthModalProps) => {
   const { login, register } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [showConfirmationMessage, setShowConfirmationMessage] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -49,14 +50,52 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }: AuthModalProps) => {
     setIsLoading(true);
     
     try {
-      const success = await register(formData.email, formData.name, formData.password);
-      if (success) {
-        onAuthSuccess();
+      const result = await register(formData.email, formData.name, formData.password);
+      if (result.success) {
+        if (result.needsConfirmation) {
+          setShowConfirmationMessage(true);
+        } else {
+          onAuthSuccess();
+        }
       }
     } finally {
       setIsLoading(false);
     }
   };
+
+  if (showConfirmationMessage) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="sm:max-w-md bg-slate-900 border-green-400/20">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-center text-2xl font-bold text-white">
+              <CheckCircle className="w-6 h-6 text-green-400 mr-2" />
+              Registration Successful
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 text-center">
+            <div className="text-green-400 text-lg">
+              Welcome to the Alien Recon Lab!
+            </div>
+            <div className="text-white">
+              We've sent a confirmation email to <strong>{formData.email}</strong>
+            </div>
+            <div className="text-gray-300 text-sm">
+              Please check your email and click the confirmation link to activate your account. 
+              Once confirmed, you can return here to sign in.
+            </div>
+            <Button 
+              onClick={onClose}
+              className="w-full bg-green-600 hover:bg-green-700"
+            >
+              Got it!
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -132,6 +171,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }: AuthModalProps) => {
                   value={formData.name}
                   onChange={handleInputChange}
                   className="bg-slate-800 border-green-400/20 text-white"
+                  required
                 />
               </div>
               

@@ -24,7 +24,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
-  register: (email: string, name: string, password: string) => Promise<boolean>;
+  register: (email: string, name: string, password: string) => Promise<{ success: boolean; needsConfirmation?: boolean }>;
   logout: () => void;
   updateUser: (userData: Partial<UserProfile>) => void;
 }
@@ -89,11 +89,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (error) {
-        toast({
-          title: "Authentication Failed",
-          description: error.message,
-          variant: "destructive",
-        });
+        if (error.message.includes('Email not confirmed')) {
+          toast({
+            title: "Email Confirmation Required",
+            description: "Please check your email and click the confirmation link before signing in.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Authentication Failed",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
         return false;
       }
 
@@ -122,7 +130,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const register = async (email: string, name: string, password: string): Promise<boolean> => {
+  const register = async (email: string, name: string, password: string): Promise<{ success: boolean; needsConfirmation?: boolean }> => {
     try {
       const redirectUrl = `${window.location.origin}/`;
       
@@ -143,25 +151,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           description: error.message,
           variant: "destructive",
         });
-        return false;
+        return { success: false };
       }
 
       if (data.user) {
-        toast({
-          title: "Agent Registered",
-          description: "Your investigation clearance has been approved.",
-        });
-        return true;
+        // Check if user needs email confirmation
+        if (!data.session) {
+          toast({
+            title: "Registration Successful!",
+            description: "Please check your email and click the confirmation link to complete your registration.",
+          });
+          return { success: true, needsConfirmation: true };
+        } else {
+          toast({
+            title: "Agent Registered",
+            description: "Your investigation clearance has been approved.",
+          });
+          return { success: true };
+        }
       }
 
-      return false;
+      return { success: false };
     } catch (error: any) {
       toast({
         title: "Registration Failed",
         description: error.message || "Registration failed",
         variant: "destructive",
       });
-      return false;
+      return { success: false };
     }
   };
 
