@@ -34,10 +34,12 @@ const ProfileDashboard = ({ user, isOpen, onClose, onLogout }: ProfileDashboardP
 
   const getRankBadgeColor = (rank: string) => {
     switch (rank) {
-      case 'Rookie': return 'bg-green-500';
-      case 'Agent': return 'bg-blue-500';
-      case 'Analyst': return 'bg-purple-500';
-      case 'Expert': return 'bg-red-500';
+      case 'Recon Trainee': return 'bg-slate-500';
+      case 'Cipher Cadet': return 'bg-green-500';
+      case 'Gamma Node': return 'bg-blue-500';
+      case 'Sigma-51': return 'bg-purple-500';
+      case 'Command Entity': return 'bg-yellow-500';
+      case 'Delta Agent': return 'bg-red-500';
       default: return 'bg-gray-500';
     }
   };

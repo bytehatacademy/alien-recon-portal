@@ -4,6 +4,7 @@ import { param, query, validationResult } from 'express-validator';
 import User from '../models/User';
 import Activity from '../models/Activity';
 import MissionCompletion from '../models/MissionCompletion';
+import Skill from '../models/Skill';
 import { authMiddleware, AuthRequest, adminMiddleware } from '../middleware/auth';
 
 const router = express.Router();

@@ -1,4 +1,3 @@
-
 import express, { Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { body, validationResult } from 'express-validator';
@@ -8,6 +7,8 @@ import { authMiddleware, AuthRequest } from '../middleware/auth';
 
 const router = express.Router();
 
+// Using application-level CORS middleware
+
 // Generate JWT Token
 const generateToken = (userId: string, email: string): string => {
   const JWT_SECRET = process.env.JWT_SECRET;
@@ -15,11 +16,7 @@ const generateToken = (userId: string, email: string): string => {
     throw new Error('JWT_SECRET is not defined');
   }
   
-  return jwt.sign(
-    { id: userId, email },
-    JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
-  );
+  return jwt.sign({ id: userId, email }, JWT_SECRET as string, { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
 };
 
 // @route   POST /api/auth/register
@@ -74,7 +71,7 @@ router.post('/register', [
     await Activity.create({
       userId: user._id,
       type: 'login',
-      title: 'Agent Registered',
+      title: 'Recon Trainee Registered',
       description: 'Welcome to the Alien Recon Lab!'
     });
 
@@ -167,7 +164,7 @@ router.post('/login', [
     await Activity.create({
       userId: user._id,
       type: 'login',
-      title: 'Agent Login',
+      title: `${user.rank} Login`,
       description: 'Successfully accessed the lab'
     });
 

@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,7 +6,6 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Download, Flag, CheckCircle, Clock, Trophy, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiService } from '@/services/api';
-import { useAuth } from '@/hooks/useAuth';
 
 interface MissionDetailProps {
   mission: {
@@ -25,21 +23,63 @@ interface MissionDetailProps {
   user: {
     name?: string;
     score?: number;
+    completedMissions?: string[];
   };
+  isCompleted?: boolean;
 }
 
-
-
-const MissionDetail: React.FC<MissionDetailProps> = ({ mission, onBack, user }) => {
+const MissionDetailComponent: React.FC<MissionDetailProps> = ({ mission, onBack, user, isCompleted: initialIsCompleted = false }) => {
   const [flagInput, setFlagInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isCompleted, setIsCompleted] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(initialIsCompleted);
   const [attempts, setAttempts] = useState(0);
+  const [submittedFlag, setSubmittedFlag] = useState<string>('');
   const { toast } = useToast();
-  const { updateUser } = useAuth();
+
+  // Fetch completed mission flag
+  useEffect(() => {
+    const fetchCompletedFlag = async () => {
+      if (initialIsCompleted && mission._id) {
+        try {
+          const response = await apiService.getMissionCompletion(mission._id);
+          if (response.success && response.data?.flagSubmitted) {
+            setSubmittedFlag(response.data.flagSubmitted);
+          }
+        } catch (error) {
+          console.error('Error fetching mission completion:', error);
+        }
+      }
+    };
+
+    if (initialIsCompleted) {
+      setIsCompleted(true);
+      fetchCompletedFlag();
+    }
+  }, [initialIsCompleted, mission._id]);
 
   const handleFlagSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (isCompleted) {
+      toast({
+        title: "Mission Already Completed",
+        description: "You've already successfully completed this mission!",
+        variant: "default"
+      });
+      return;
+    }
+
+    // Validate flag format
+    const flagPattern = /^ARLab\{.*\}$/;
+    if (!flagPattern.test(flagInput.trim())) {
+      toast({
+        title: "Invalid Flag Format",
+        description: "Flag must follow the format: ARLab{flag_content}",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     setAttempts(prev => prev + 1);
 
@@ -48,18 +88,26 @@ const MissionDetail: React.FC<MissionDetailProps> = ({ mission, onBack, user }) 
       
       if (response.success) {
         setIsCompleted(true);
-        // Update user score
-        if (user && response.data.pointsEarned) {
-          updateUser({
-            ...user,
-            score: (user.score || 0) + response.data.pointsEarned
-          });
-        }
-        
+        setSubmittedFlag(flagInput.trim());
+
+        // Show mission completion toast
         toast({
           title: "Mission Completed! 🎉",
           description: `Excellent work, Agent! You've earned ${mission.points} points.`,
         });
+
+        // Check for rank promotion
+        if (response.data.newRank && response.data.oldRank !== response.data.newRank) {
+          // Show rank promotion toast after a small delay
+          setTimeout(() => {
+            toast({
+              title: "Rank Promotion! 🌟",
+              description: `Congratulations! You've been promoted from ${response.data.oldRank} to ${response.data.newRank}!`,
+              variant: "default",
+              duration: 5000
+            });
+          }, 1500);
+        }
       }
     } catch (error: any) {
       toast({
@@ -78,7 +126,6 @@ const MissionDetail: React.FC<MissionDetailProps> = ({ mission, onBack, user }) 
 
   const handleDownload = () => {
     if (mission.fileUrl && mission.fileUrl !== '#') {
-      // Open the file URL in a new tab
       window.open(mission.fileUrl, '_blank');
     } else {
       toast({
@@ -206,7 +253,27 @@ const MissionDetail: React.FC<MissionDetailProps> = ({ mission, onBack, user }) 
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {!isCompleted ? (
+            {isCompleted ? (
+              <div className="text-center py-8">
+                <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
+                  <CheckCircle className="w-12 h-12 text-green-500" />
+                </div>
+                <h3 className="text-2xl font-bold text-green-400 mb-4">Mission Accomplished!</h3>
+                <p className="text-slate-400 mb-6 text-lg">
+                  Outstanding work, Agent {user?.name}. You've successfully completed this investigation.
+                </p>
+                <div className="text-green-400 font-semibold mb-8 text-2xl">
+                  +{mission.points} points earned
+                </div>
+                <Button 
+                  onClick={handleContinueToNext}
+                  className="bg-green-500 hover:bg-green-600 w-full md:w-auto text-lg px-6 py-3"
+                >
+                  <ArrowRight className="w-5 h-5 mr-2" />
+                  Continue to Next Mission
+                </Button>
+              </div>
+            ) : (
               <form onSubmit={handleFlagSubmit} className="space-y-4">
                 <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
                   <Input
@@ -219,7 +286,7 @@ const MissionDetail: React.FC<MissionDetailProps> = ({ mission, onBack, user }) 
                   />
                   <Button 
                     type="submit" 
-                    className="bg-green-500 hover:bg-green-600 w-full md:w-auto"
+                    className="bg-green-500 hover:bg-green-600 w-full md:w-auto flex items-center"
                     disabled={isSubmitting || !flagInput.trim()}
                   >
                     {isSubmitting ? (
@@ -242,24 +309,6 @@ const MissionDetail: React.FC<MissionDetailProps> = ({ mission, onBack, user }) 
                   </div>
                 )}
               </form>
-            ) : (
-              <div className="text-center py-8">
-                <CheckCircle className="w-12 md:w-16 h-12 md:h-16 text-green-500 mx-auto mb-4" />
-                <h3 className="text-xl md:text-2xl font-bold text-green-400 mb-2">Mission Accomplished!</h3>
-                <p className="text-slate-400 mb-4 text-sm md:text-base">
-                  Outstanding work, Agent {user?.name}. You've successfully completed this investigation.
-                </p>
-                <div className="text-green-400 font-semibold mb-6 text-lg md:text-xl">
-                  +{mission.points} points earned
-                </div>
-                <Button 
-                  onClick={handleContinueToNext}
-                  className="bg-green-500 hover:bg-green-600 w-full md:w-auto"
-                >
-                  <ArrowRight className="w-4 h-4 mr-2" />
-                  Continue to Next Mission
-                </Button>
-              </div>
             )}
           </CardContent>
         </Card>
@@ -268,4 +317,4 @@ const MissionDetail: React.FC<MissionDetailProps> = ({ mission, onBack, user }) 
   );
 };
 
-export default MissionDetail;
+export default MissionDetailComponent;

@@ -1,8 +1,7 @@
-
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IMission extends Document {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   title: string;
   description: string;
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
@@ -11,7 +10,7 @@ export interface IMission extends Document {
   category: string;
   flag: string;
   fileUrl?: string;
-  unlockRequirement?: mongoose.Types.ObjectId;
+  unlockRequirement?: string;
   hints: {
     text: string;
     pointDeduction: number;
@@ -23,6 +22,10 @@ export interface IMission extends Document {
 }
 
 const MissionSchema = new Schema<IMission>({
+  _id: { 
+    type: String, 
+    required: true 
+  },
   title: {
     type: String,
     required: [true, 'Mission title is required'],
@@ -68,7 +71,7 @@ const MissionSchema = new Schema<IMission>({
     trim: true
   },
   unlockRequirement: {
-    type: Schema.Types.ObjectId,
+    type: String,
     ref: 'Mission',
     default: null
   },
@@ -96,6 +99,7 @@ const MissionSchema = new Schema<IMission>({
     min: [1, 'Order must be at least 1']
   }
 }, {
+  _id: false, // This allows us to set our own _id
   timestamps: true,
   toJSON: { virtuals: true },
   toObject: { virtuals: true }

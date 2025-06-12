@@ -1,10 +1,9 @@
-
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IActivity extends Document {
   _id: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
-  type: 'mission_completed' | 'rank_promoted' | 'hint_used' | 'login' | 'skill_improved';
+  type: 'mission_completed' | 'rank_promoted' | 'hint_used' | 'login' | 'skill_improved' | 'flag_submission';
   title: string;
   description: string;
   points?: number;
@@ -20,7 +19,7 @@ const ActivitySchema = new Schema<IActivity>({
   },
   type: {
     type: String,
-    enum: ['mission_completed', 'rank_promoted', 'hint_used', 'login', 'skill_improved'],
+    enum: ['mission_completed', 'rank_promoted', 'hint_used', 'login', 'skill_improved', 'flag_submission'],
     required: [true, 'Activity type is required']
   },
   title: {

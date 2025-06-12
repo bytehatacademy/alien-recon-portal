@@ -1,19 +1,19 @@
-import { Toaster } from "@/components/ui/toaster"
-import { Toaster as Sonner } from "@/components/ui/sonner"
-import { TooltipProvider } from "@/components/ui/tooltip"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-import Layout from "@/components/Layout"
-import { AuthProvider } from "@/hooks/useAuth"
-import Index from "@/pages/Index"
-import Dashboard from "@/pages/Dashboard"
-import MissionDetail from "@/pages/MissionDetail"
-import NotFound from "@/pages/NotFound"
-import PrivateRoute from "@/components/PrivateRoute"
+import { Toaster } from "./components/ui/toaster";
+import { Toaster as Sonner } from "./components/ui/sonner";
+import { TooltipProvider } from "./components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
+import { AuthProvider } from "./hooks/useAuth";
+import Index from "./pages/Index";
+import Dashboard from "./pages/Dashboard";
+import MissionDetail from "./pages/MissionDetail";
+import NotFound from "./pages/NotFound";
+import PrivateRoute from "./components/PrivateRoute";
 
-const queryClient = new QueryClient()
+function App() {
+  const queryClient = new QueryClient();
 
-export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
@@ -31,7 +31,8 @@ export default function App() {
                       <Dashboard />
                     </PrivateRoute>
                   }
-                />                <Route
+                />
+                <Route
                   path="/missions/:id"
                   element={
                     <PrivateRoute>
@@ -46,5 +47,7 @@ export default function App() {
         </TooltipProvider>
       </AuthProvider>
     </QueryClientProvider>
-  )
+  );
 }
+
+export default App;

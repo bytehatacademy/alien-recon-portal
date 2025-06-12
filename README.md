@@ -1,73 +1,119 @@
-# Welcome to your Lovable project
+# 👽 Alien Recon Lab - CTF Platform
 
-## Project info
+A modern, gamified Capture The Flag (CTF) platform with an alien-themed progression system.
 
-**URL**: https://lovable.dev/projects/00308f45-7cd2-4c90-ab86-a59299a7edc8
+## Project Overview
 
-## How can I edit this code?
+The Alien Recon Lab is a cybersecurity training platform that combines:
+- 🎮 Engaging CTF challenges
+- 👾 Unique alien-themed rank progression
+- 📊 Real-time scoring and leaderboards
+- 🔒 Secure authentication and data handling
+- 🎯 Skill-based mission progression
 
-There are several ways of editing your application.
+## Architecture
 
-**Use Lovable**
+### Frontend (React + TypeScript)
+- Modern React with TypeScript
+- Responsive UI with Tailwind CSS and shadcn/ui
+- Real-time mission updates
+- Interactive mission dashboards
+- Dynamic leaderboard system
+- Secure API integration
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/00308f45-7cd2-4c90-ab86-a59299a7edc8) and start prompting.
+### Backend (Node.js + MongoDB)
+- Express.js REST API
+- MongoDB with Mongoose ODM
+- JWT authentication
+- Rate limiting and security features
+- Activity logging system
 
-Changes made via Lovable will be committed automatically to this repo.
+## Development Setup
 
-**Use your preferred IDE**
+### Prerequisites
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- Node.js 18+ and npm
+- MongoDB 5.0+
+- Git
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Installation
 
 Follow these steps:
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+```powershell
+# Clone and setup frontend
+git clone https://github.com/yourusername/alien-recon-portal-fullstack.git
+cd alien-recon-portal-fullstack
+npm install
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Setup and start backend
+cd backend
+npm install
+npm run dev
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# In a new terminal, start frontend
+cd ..
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Project Structure
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```
+alien-recon-portal-fullstack/
+├── src/                  # Frontend source
+│   ├── components/       # React components
+│   ├── services/        # API services
+│   ├── hooks/           # Custom React hooks
+│   └── pages/           # Route components
+├── backend/             # Backend source
+│   ├── src/
+│   │   ├── config/     # Server configuration
+│   │   ├── models/     # Database models
+│   │   ├── routes/     # API endpoints
+│   │   └── scripts/    # Utility scripts
+└── public/             # Static assets
+```
 
-**Use GitHub Codespaces**
+## Environment Setup
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+1. **Frontend (.env):**
+   ```env
+   VITE_API_BASE_URL=http://localhost:5000/api
+   ```
 
-## What technologies are used for this project?
+2. **Backend (.env):**
+   ```env
+   MONGODB_URI=mongodb://localhost:27017/alien-recon-lab
+   JWT_SECRET=your-secure-secret-key
+   PORT=5000
+   NODE_ENV=development
+   ```
 
-This project is built with:
+## Features
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### For Players
+- Progressive mission system with unlockable challenges
+- Real-time scoring and rank progression
+- Interactive leaderboards
+- Skill development tracking across multiple domains
+- Secure flag submission system
+- Detailed mission history and achievements
 
-## How can I deploy this project?
+### For Admins
+- Comprehensive mission management
+- User activity monitoring
+- Progress tracking and analytics
+- Security event logging
+- Performance metrics
 
-Simply open [Lovable](https://lovable.dev/projects/00308f45-7cd2-4c90-ab86-a59299a7edc8) and click on Share -> Publish.
+## Contributing
 
-## Can I connect a custom domain to my Lovable project?
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-Yes, you can!
+## License
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+This project is licensed under the MIT License - see the LICENSE file for details

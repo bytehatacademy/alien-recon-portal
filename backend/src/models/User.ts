@@ -1,4 +1,3 @@
-
 import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
@@ -7,10 +6,10 @@ export interface IUser extends Document {
   email: string;
   name: string;
   password: string;
-  rank: 'Rookie' | 'Agent' | 'Analyst' | 'Expert' | 'Elite';
+  rank: 'Recon Trainee' | 'Cipher Cadet' | 'Gamma Node' | 'Sigma-51' | 'Command Entity' | 'Delta Agent';
   score: number;
   avatar?: string;
-  completedMissions: mongoose.Types.ObjectId[];
+  completedMissions: string[]; // Changed from mongoose.Types.ObjectId[] to string[]
   skills: {
     skillId: mongoose.Types.ObjectId;
     progress: number;
@@ -21,24 +20,26 @@ export interface IUser extends Document {
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
-  calculateRank(): 'Rookie' | 'Agent' | 'Analyst' | 'Expert' | 'Elite';
+  calculateRank(): 'Recon Trainee' | 'Cipher Cadet' | 'Gamma Node' | 'Sigma-51' | 'Command Entity' | 'Delta Agent';
+  totalMissionsCompleted: number;
 }
 
 const UserSchema = new Schema<IUser>({
   email: {
     type: String,
     required: [true, 'Email is required'],
-    unique: true,
     lowercase: true,
     trim: true,
-    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
+    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email'],
+    index: true
   },
   name: {
     type: String,
     required: [true, 'Name is required'],
     trim: true,
     minlength: [2, 'Name must be at least 2 characters'],
-    maxlength: [50, 'Name cannot exceed 50 characters']
+    maxlength: [50, 'Name cannot exceed 50 characters'],
+    index: true
   },
   password: {
     type: String,
@@ -48,8 +49,8 @@ const UserSchema = new Schema<IUser>({
   },
   rank: {
     type: String,
-    enum: ['Rookie', 'Agent', 'Analyst', 'Expert', 'Elite'],
-    default: 'Rookie'
+    enum: ['Recon Trainee', 'Cipher Cadet', 'Gamma Node', 'Sigma-51', 'Command Entity', 'Delta Agent'],
+    default: 'Recon Trainee'
   },
   score: {
     type: Number,
@@ -58,10 +59,10 @@ const UserSchema = new Schema<IUser>({
   },
   avatar: {
     type: String,
-    default: null
+    trim: true
   },
   completedMissions: [{
-    type: Schema.Types.ObjectId,
+    type: String, // Changed from Schema.Types.ObjectId to String
     ref: 'Mission'
   }],
   skills: [{
@@ -72,9 +73,9 @@ const UserSchema = new Schema<IUser>({
     },
     progress: {
       type: Number,
-      min: 0,
-      max: 100,
-      default: 0
+      default: 0,
+      min: [0, 'Progress cannot be negative'],
+      max: [100, 'Progress cannot exceed 100']
     },
     lastUpdated: {
       type: Date,
@@ -96,7 +97,6 @@ const UserSchema = new Schema<IUser>({
 });
 
 // Index for performance
-UserSchema.index({ email: 1 });
 UserSchema.index({ score: -1 });
 UserSchema.index({ rank: 1 });
 
@@ -125,17 +125,23 @@ UserSchema.methods.comparePassword = async function(candidatePassword: string): 
 };
 
 // Instance method to calculate rank based on score
-UserSchema.methods.calculateRank = function(): 'Rookie' | 'Agent' | 'Analyst' | 'Expert' | 'Elite' {
-  if (this.score >= 2000) return 'Elite';
-  if (this.score >= 1500) return 'Expert';
-  if (this.score >= 1000) return 'Analyst';
-  if (this.score >= 500) return 'Agent';
-  return 'Rookie';
+UserSchema.methods.calculateRank = function(): string {
+  const completedCount = this.completedMissions.length;
+  if (completedCount >= 25) return 'Delta Agent';
+  if (completedCount >= 20) return 'Command Entity';
+  if (completedCount >= 15) return 'Sigma-51';
+  if (completedCount >= 10) return 'Gamma Node';
+  if (completedCount >= 5) return 'Cipher Cadet';
+  return 'Recon Trainee';
 };
 
 // Virtual for total missions completed
 UserSchema.virtual('totalMissionsCompleted').get(function() {
   return this.completedMissions.length;
 });
+
+// Add indexes
+UserSchema.index({ email: 1 }, { unique: true });
+UserSchema.index({ name: 1 });
 
 export default mongoose.model<IUser>('User', UserSchema);

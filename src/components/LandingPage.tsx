@@ -1,6 +1,6 @@
-
 import { Button } from '@/components/ui/button';
 import { Shield, Zap, Target, Users } from 'lucide-react';
+import { SiAlienware } from "react-icons/si";
 
 interface LandingPageProps {
   onBeginInvestigation: () => void;
@@ -17,14 +17,47 @@ const LandingPage = ({ onBeginInvestigation }: LandingPageProps) => {
         {/* Header */}
         <div className="mb-8 md:mb-12 animate-fade-in">
           <div className="flex flex-col md:flex-row items-center justify-center mb-4 md:mb-6">
-            <Shield className="w-12 h-12 md:w-16 md:h-16 text-green-400 mb-4 md:mb-0 md:mr-4 animate-pulse" />
+            <SiAlienware className="w-12 h-12 md:w-16 md:h-16 text-green-400 mb-4 md:mb-0 md:mr-4 animate-pulse" />
             <h1 className="text-4xl md:text-6xl lg:text-8xl font-bold bg-gradient-to-r from-green-400 via-blue-400 to-purple-400 bg-clip-text text-transparent animate-gradient-wave bg-[length:200%_auto]">
-              Alien Recon Lab
+              Delta Anomaly
             </h1>
           </div>
-          <p className="text-lg md:text-xl lg:text-2xl text-slate-300 max-w-3xl mx-auto leading-relaxed px-4">
-            Discover, Investigate, and Reveal the Alien Infiltration in Earth's Digital Realm
+          <p className="text-lg md:text-xl lg:text-2xl text-slate-300 max-w-5xl mx-auto leading-relaxed px-4">
+            “Beneath the surface of every secure network lies something no protocol can explain.”
           </p>
+          <p className="text-slate-400 text-sm md:text-base">— A buried signal. A corrupted origin. Welcome to Delta Anomaly.</p>
+        </div>
+
+        {/* Intro card */}
+        <div className="w-full max-w-6xl mb-12 md:mb-16 px-4">
+          <div
+            className="bg-slate-800/50 backdrop-blur-sm border border-green-400/20 rounded-lg p-6 md:p-8 hover:border-green-400/40 transition-all duration-300 relative overflow-hidden"
+            style={{
+              backgroundImage: `
+                linear-gradient(rgba(100, 255, 100, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(100, 255, 100, 0.05) 1px, transparent 1px)
+              `,
+              backgroundSize: '20px 20px',
+            }}
+          >
+            <div className="text-slate-400 text-sm md:text-base leading-snug text-left">
+              <h2 className="text-green-400 font-semibold text-lg md:text-xl mb-2">
+                🛰️ // CLASSIFIED TRANSMISSION: LEAKED REPORT //
+              </h2>
+              <blockquote className="italic border-l-4 border-green-400 pl-4 text-slate-300 mb-4">
+                “After decades of silence, something broke through Earth's orbital perimeter. No radar signature. No response. It crash-landed 34 miles north of Groom Lake — The world remained unaware. But our team did not.”
+              </blockquote>
+              <p><strong>Year:</strong> 1947</p>
+              <p><strong>Incident:</strong> Unidentified flying object was flying over the New Mexico desert and crash-landed at about 30 miles southeast of Corona, New Mexico and about 75 miles northwest of Roswell.</p>
+              <p><strong>Leads:</strong> The wreckage was covertly recovered and moved to a classified subterranean facility beneath Groom Lake under armed escort, in the southern Nevada desert, 83 miles northwest of Las Vegas.</p>
+              <p><strong>Inside the wreckage: </strong>A drone. Not built by any known Earth technology, layered with unfamiliar architecture, Scattered across the high desert. Twisted alloys. Burned soil. No cockpit. No engine. No explanation. But it's <strong className="text-green-400">digital core</strong> was still active.
+              </p>
+              <p>
+                And something was alive in its <strong className="text-green-400">code. </strong> A <strong className="text-green-400">message</strong>. A <strong className="text-green-400">map.</strong> An <strong className="text-green-400">invitation. </strong>
+              </p>
+              <p className="text-green-400 font-semibold">Someone — or something — wants us to find it. Welcome to the breach.</p>
+            </div>
+          </div>
         </div>
 
         {/* Feature cards */}
@@ -44,7 +77,7 @@ const LandingPage = ({ onBeginInvestigation }: LandingPageProps) => {
           <div className="bg-slate-800/50 backdrop-blur-sm border border-purple-400/20 rounded-lg p-4 md:p-6 hover:border-purple-400/40 transition-all duration-300 hover:scale-105 md:col-span-2 lg:col-span-1">
             <Users className="w-10 h-10 md:w-12 md:h-12 text-purple-400 mb-4 mx-auto" />
             <h3 className="text-lg md:text-xl font-semibold text-white mb-2">Progressive Learning</h3>
-            <p className="text-slate-400 text-sm md:text-base">Advance from Rookie to Elite Agent through challenging modules</p>
+            <p className="text-slate-400 text-sm md:text-base">Advance from Recon Trainee to Delta Agent through challenging modules</p>
           </div>
         </div>
 
