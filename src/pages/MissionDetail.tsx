@@ -50,7 +50,6 @@ const MissionDetailPage = () => {
     difficulty: mission.difficulty,
     points: mission.points,
     estimatedTime: mission.estimated_time, // Transform snake_case to camelCase
-    briefing: mission.briefing,
     fileUrl: mission.file_url, // Transform snake_case to camelCase
   };
 
