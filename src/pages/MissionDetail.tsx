@@ -1,3 +1,4 @@
+
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useMissions } from '@/hooks/useMissions';
@@ -10,6 +11,7 @@ const MissionDetailPage = () => {
   const { user } = useAuth();
   const { data: missions = [], isLoading } = useMissions();
   const mission = missions.find(m => m._id === id);
+  
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-900 p-4 flex flex-col items-center justify-center">
@@ -36,11 +38,25 @@ const MissionDetailPage = () => {
   const handleBack = () => {
     navigate('/dashboard');
   };
-  const isCompleted = user?.completedMissions?.includes(mission._id);
+  
+  const isCompleted = user?.completed_missions?.includes(mission._id);
+
+  // Transform mission data to match MissionDetailComponent expectations
+  const transformedMission = {
+    _id: mission._id,
+    title: mission.title,
+    description: mission.description,
+    category: mission.category,
+    difficulty: mission.difficulty,
+    points: mission.points,
+    estimatedTime: mission.estimated_time, // Transform snake_case to camelCase
+    briefing: mission.briefing,
+    fileUrl: mission.file_url, // Transform snake_case to camelCase
+  };
 
   return (
     <MissionDetailComponent 
-      mission={mission}
+      mission={transformedMission}
       onBack={handleBack}
       user={user}
       isCompleted={isCompleted}

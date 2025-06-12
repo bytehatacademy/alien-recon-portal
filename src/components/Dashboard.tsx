@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
@@ -16,8 +17,8 @@ interface Mission {
   category: string;
   difficulty: string;
   points: number;
-  estimatedTime: string;
-  fileUrl: string;
+  estimated_time: string;
+  file_url: string;
   isUnlocked: boolean;
 }
 
@@ -38,7 +39,7 @@ const Dashboard = () => {
 		);
 	}
 
-	const completedMissionIds = user.completedMissions || [];
+	const completedMissionIds = user.completed_missions || [];
 	const totalMissions = missions.length;
 	const completedCount = completedMissionIds.length;
 	const remainingCount = totalMissions - completedCount;
@@ -102,32 +103,31 @@ const Dashboard = () => {
 					{/* Stats Cards */}
 					<div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
 						<Card className="bg-slate-800/50 border-green-400/20">
-  <CardContent className="p-4">
-    <div className="flex items-center justify-between">
-      <div className="flex items-center">
-        <Shield className="w-8 h-8 text-green-400 mr-3" />
-        <div>
-          <div className="text-sm font-bold text-gray-400">Current Rank</div>
-          <div className="text-xl font-bold text-white">{currentRank}</div>
-          <div className="text-xs text-gray-500 mt-1">
-            {completedCount >= 25
-              ? 'Maximum Rank Achieved!'
-              : completedCount >= 20
-              ? `${25 - completedCount} more missions for Delta Agent`
-              : completedCount >= 15
-              ? `${20 - completedCount} more missions for Command Entity`
-              : completedCount >= 10
-              ? `${15 - completedCount} more missions for Sigma-51`
-              : completedCount >= 5
-              ? `${10 - completedCount} more missions for Gamma Node`
-              : `${5 - completedCount} more missions for Cipher Cadet`}
-          </div>
-        </div>
-      </div> {/* ✅ This was missing */}
-    </div>
-  </CardContent>
-</Card>
-
+							<CardContent className="p-4">
+								<div className="flex items-center justify-between">
+									<div className="flex items-center">
+										<Shield className="w-8 h-8 text-green-400 mr-3" />
+										<div>
+											<div className="text-sm font-bold text-gray-400">Current Rank</div>
+											<div className="text-xl font-bold text-white">{currentRank}</div>
+											<div className="text-xs text-gray-500 mt-1">
+												{completedCount >= 25
+													? 'Maximum Rank Achieved!'
+													: completedCount >= 20
+													? `${25 - completedCount} more missions for Delta Agent`
+													: completedCount >= 15
+													? `${20 - completedCount} more missions for Command Entity`
+													: completedCount >= 10
+													? `${15 - completedCount} more missions for Sigma-51`
+													: completedCount >= 5
+													? `${10 - completedCount} more missions for Gamma Node`
+													: `${5 - completedCount} more missions for Cipher Cadet`}
+											</div>
+										</div>
+									</div>
+								</div>
+							</CardContent>
+						</Card>
 
 						<Card className="bg-slate-800/50 border-yellow-400/20">
 							<CardContent className="p-4">
@@ -207,7 +207,7 @@ const Dashboard = () => {
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 					{missions.map((mission) => {
 						let status: MissionStatus;
-						const isCompleted = user?.completedMissions?.includes(mission._id);
+						const isCompleted = user?.completed_missions?.includes(mission._id);
 						if (isCompleted) {
 							status = 'completed';
 						} else if (mission.isUnlocked) {
@@ -257,7 +257,7 @@ const Dashboard = () => {
 
 										<div className="flex justify-between items-center text-sm">
 											<span className="text-gray-400">Est. Time:</span>
-											<span className="text-white">{mission.estimatedTime}</span>
+											<span className="text-white">{mission.estimated_time}</span>
 										</div>
 
 										{status === 'available' && (
