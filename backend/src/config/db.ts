@@ -1,10 +1,9 @@
-
 import mongoose from 'mongoose';
+
+export const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/alien-recon-lab';
 
 const connectDB = async (): Promise<void> => {
   try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/alien-recon-lab';
-    
     const conn = await mongoose.connect(mongoURI, {
       // Remove deprecated options that are now default in Mongoose 8+
     });
@@ -20,11 +19,8 @@ const connectDB = async (): Promise<void> => {
       console.log('MongoDB disconnected');
     });
 
-    // Graceful shutdown
-    process.on('SIGINT', async () => {
-      await mongoose.connection.close();
-      console.log('MongoDB connection closed through app termination');
-      process.exit(0);
+    mongoose.connection.on('connected', () => {
+      console.log('MongoDB connected');
     });
 
   } catch (error) {

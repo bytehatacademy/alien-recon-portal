@@ -1,5 +1,4 @@
-
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = '/api';
 
 class ApiService {
   private token: string | null = null;
@@ -11,6 +10,7 @@ class ApiService {
   private getHeaders() {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
+      'Accept': 'application/json'
     };
     
     if (this.token) {
@@ -25,10 +25,8 @@ class ApiService {
     
     const response = await fetch(url, {
       ...options,
-      headers: {
-        ...this.getHeaders(),
-        ...options.headers,
-      },
+      headers: this.getHeaders(),
+      credentials: 'include',
     });
 
     const data = await response.json();
@@ -89,15 +87,32 @@ class ApiService {
     return this.request(`/missions/${id}`);
   }
 
+  async getMissionCompletion(missionId: string) {
+    return this.request(`/missions/${missionId}/completion`);
+  }
+
   async submitFlag(missionId: string, flag: string) {
     return this.request(`/missions/${missionId}/submit`, {
       method: 'POST',
       body: JSON.stringify({ flag }),
-    });
+    }).then(response => ({
+      ...response,
+      data: {
+        ...response.data,
+        oldRank: response.data.oldRank,
+        newRank: response.data.newRank
+      }
+    }));
   }
 
   async getMissionCompletions() {
-    return this.request('/missions/completions');
+    const response = await this.request('/users/profile');
+    return {
+      success: true,
+      data: {
+        completions: response.data?.completedMissions || []
+      }
+    };
   }
 
   // User methods

@@ -132,8 +132,8 @@ export const adminMiddleware = (
     return;
   }
 
-  // Check if user has admin privileges (you can modify this based on your requirements)
-  if (req.user.rank !== 'Elite') {
+  // Check if user has admin privileges (must be Delta Agent rank)
+  if (req.user.rank !== 'Delta Agent') {
     res.status(403).json({
       success: false,
       message: 'Access denied. Admin privileges required.'

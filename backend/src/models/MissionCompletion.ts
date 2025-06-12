@@ -1,10 +1,9 @@
-
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IMissionCompletion extends Document {
   _id: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
-  missionId: mongoose.Types.ObjectId;
+  missionId: string; // Changed from ObjectId to string to match Mission model
   completedAt: Date;
   attempts: number;
   hintsUsed: number;
@@ -22,7 +21,7 @@ const MissionCompletionSchema = new Schema<IMissionCompletion>({
     required: [true, 'User ID is required']
   },
   missionId: {
-    type: Schema.Types.ObjectId,
+    type: String, // Changed from Schema.Types.ObjectId to String
     ref: 'Mission',
     required: [true, 'Mission ID is required']
   },
@@ -68,13 +67,9 @@ const MissionCompletionSchema = new Schema<IMissionCompletion>({
   timestamps: true
 });
 
-// Compound index to ensure one completion per user per mission
-MissionCompletionSchema.index({ userId: 1, missionId: 1 }, { unique: true });
-
-// Indexes for analytics and performance
-MissionCompletionSchema.index({ completedAt: -1 });
-MissionCompletionSchema.index({ missionId: 1, completedAt: -1 });
-MissionCompletionSchema.index({ userId: 1, completedAt: -1 });
-MissionCompletionSchema.index({ pointsEarned: -1 });
+// Indexes for performance
+MissionCompletionSchema.index({ userId: 1, missionId: 1 }, { unique: true }); // One completion per user per mission
+MissionCompletionSchema.index({ userId: 1, completedAt: -1 }); // For user history
+MissionCompletionSchema.index({ missionId: 1, completedAt: -1 }); // For mission statistics
 
 export default mongoose.model<IMissionCompletion>('MissionCompletion', MissionCompletionSchema);

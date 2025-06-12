@@ -1,4 +1,3 @@
-
 import express, { Response } from 'express';
 import { body, param, validationResult } from 'express-validator';
 import Mission from '../models/Mission';
@@ -33,13 +32,13 @@ router.get('/', authMiddleware, async (req: AuthRequest, res: Response): Promise
     // Add completion status and unlock status to each mission
     const missionsWithStatus = missions.map(mission => {
       const isCompleted = completedMissions.some(
-        completedId => completedId.toString() === mission._id.toString()
+        completedId => completedId === mission._id
       );
       
       let isUnlocked = true;
       if (mission.unlockRequirement) {
         isUnlocked = completedMissions.some(
-          completedId => completedId.toString() === mission.unlockRequirement?.toString()
+          completedId => completedId === mission.unlockRequirement
         );
       }
 
@@ -72,19 +71,9 @@ router.get('/', authMiddleware, async (req: AuthRequest, res: Response): Promise
 // @desc    Get single mission details
 // @access  Private
 router.get('/:id', [
-  authMiddleware,
-  param('id').isMongoId().withMessage('Invalid mission ID')
+  authMiddleware
 ], async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      res.status(400).json({
-        success: false,
-        message: 'Validation errors',
-        errors: errors.array()
-      });
-      return;
-    }
 
     if (!req.user) {
       res.status(401).json({
@@ -106,9 +95,7 @@ router.get('/:id', [
     // Check if mission is unlocked
     let isUnlocked = true;
     if (mission.unlockRequirement) {
-      isUnlocked = req.user.completedMissions.some(
-        completedId => completedId.toString() === mission.unlockRequirement?.toString()
-      );
+      isUnlocked = req.user.completedMissions.includes(mission.unlockRequirement);
     }
 
     if (!isUnlocked) {
@@ -119,9 +106,7 @@ router.get('/:id', [
       return;
     }
 
-    const isCompleted = req.user.completedMissions.some(
-      completedId => completedId.toString() === mission._id.toString()
-    );
+    const isCompleted = req.user.completedMissions.includes(mission._id);
 
     res.json({
       success: true,
@@ -144,43 +129,29 @@ router.get('/:id', [
 });
 
 // @route   POST /api/missions/:id/submit
-// @desc    Submit flag for mission
+// @desc    Submit a flag for a mission
 // @access  Private
-router.post('/:id/submit', [
-  authMiddleware,
-  param('id').isMongoId().withMessage('Invalid mission ID'),
-  body('flag')
-    .trim()
-    .notEmpty()
-    .withMessage('Flag is required')
-    .matches(/^ARLab\{.*\}$/)
-    .withMessage('Flag must follow ARLab{} format')
-], async (req: AuthRequest, res: Response): Promise<void> => {
+router.post('/:id/submit', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      res.status(400).json({
-        success: false,
-        message: 'Validation errors',
-        errors: errors.array()
-      });
-      return;
-    }
-
     if (!req.user) {
       res.status(401).json({
         success: false,
-        message: 'User not found'
+        message: 'Unauthorized'
       });
       return;
     }
 
-    const { flag } = req.body;
-    const missionId = req.params.id;
+    const submittedFlag = req.body.flag.trim();
+    if (!submittedFlag) {
+      res.status(400).json({
+        success: false,
+        message: 'Flag is required'
+      });
+      return;
+    }
 
-    // Get mission with flag
-    const mission = await Mission.findById(missionId);
-    if (!mission || !mission.isActive) {
+    const mission = await Mission.findById(req.params.id);
+    if (!mission) {
       res.status(404).json({
         success: false,
         message: 'Mission not found'
@@ -188,13 +159,9 @@ router.post('/:id/submit', [
       return;
     }
 
-    // Check if already completed
-    const existingCompletion = await MissionCompletion.findOne({
-      userId: req.user._id,
-      missionId: mission._id
-    });
-
-    if (existingCompletion) {
+    // Check if mission was already completed
+    const isAlreadyCompleted = req.user.completedMissions.includes(mission._id);
+    if (isAlreadyCompleted) {
       res.status(400).json({
         success: false,
         message: 'Mission already completed'
@@ -202,102 +169,109 @@ router.post('/:id/submit', [
       return;
     }
 
-    // Check if mission is unlocked
-    let isUnlocked = true;
-    if (mission.unlockRequirement) {
-      isUnlocked = req.user.completedMissions.some(
-        completedId => completedId.toString() === mission.unlockRequirement?.toString()
-      );
-    }
+    const isCorrect = submittedFlag === mission.flag;
 
-    if (!isUnlocked) {
-      res.status(403).json({
-        success: false,
-        message: 'Mission is locked'
-      });
-      return;
-    }
-
-    // Validate flag
-    if (flag.trim() !== mission.flag) {
-      res.status(400).json({
-        success: false,
-        message: 'Incorrect flag'
-      });
-      return;
-    }
-
-    // Create mission completion record
-    const completion = new MissionCompletion({
-      userId: req.user._id,
-      missionId: mission._id,
-      flagSubmitted: flag,
-      pointsEarned: mission.points,
-      ipAddress: req.ip,
-      userAgent: req.get('User-Agent')
-    });
-
-    await completion.save();
-
-    // Update user
-    const updatedUser = await User.findByIdAndUpdate(
-      req.user._id,
-      {
-        $push: { completedMissions: mission._id },
-        $inc: { score: mission.points }
-      },
-      { new: true }
-    );
-
-    // Create activity log
+    // Record the attempt
     await Activity.create({
       userId: req.user._id,
-      type: 'mission_completed',
-      title: `Completed: ${mission.title}`,
-      description: `Successfully completed ${mission.title}`,
-      points: mission.points,
-      metadata: {
+      type: 'flag_submission',
+      title: `Flag Submission - ${mission.title}`,
+      description: isCorrect ? 'Successfully completed the mission!' : 'Incorrect flag submission',
+      points: isCorrect ? mission.points : 0,
+      metadata: { 
         missionId: mission._id,
-        difficulty: mission.difficulty,
-        category: mission.category
+        submittedFlag,
+        correct: isCorrect
       }
     });
 
-    // Check for rank promotion
-    if (updatedUser) {
-      const oldRank = req.user.rank;
-      const newRank = updatedUser.rank;
+    if (!isCorrect) {
+      res.status(400).json({
+        success: false,
+        message: 'Incorrect flag. Keep trying!'
+      });
+      return;
+    }
+
+    // Record completion
+    await MissionCompletion.create({
+      userId: req.user._id,
+      missionId: mission._id,
+      flagSubmitted: submittedFlag,
+      pointsEarned: mission.points,
+      attempts: 1,
+      hintsUsed: 0,
+      timeSpent: 0,
+      completedAt: new Date(),
+      userAgent: req.headers['user-agent'],
+      ipAddress: req.ip
+    });      // Update user's score and completed missions
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Store starting rank
+    let oldRank = user.rank;
+
+    // Add the mission to completed missions
+    if (!user.completedMissions.includes(mission._id)) {
+      // Store old rank before making changes
+      const oldRank = user.rank;
       
-      if (oldRank !== newRank) {
+      user.completedMissions.push(mission._id);
+      user.score += mission.points;
+      
+      // Save user to trigger rank calculation
+      await user.save();
+      
+      // If rank changed, create a rank promotion activity
+      if (oldRank !== user.rank) {
         await Activity.create({
-          userId: req.user._id,
+          userId: user._id,
           type: 'rank_promoted',
-          title: `Rank promoted to ${newRank}`,
-          description: `Promoted from ${oldRank} to ${newRank}`,
+          title: 'Rank Promotion',
+          description: `Promoted from ${oldRank} to ${user.rank}!`,
+          points: 0,
           metadata: {
             oldRank,
-            newRank,
-            totalScore: updatedUser.score
+            newRank: user.rank,
+            promotionMission: mission._id
           }
         });
       }
     }
+
+    const updatedUser = user;
+
+    // Record mission completion activity
+    await Activity.create({
+      userId: req.user._id,
+      type: 'mission_completed',
+      title: `Mission Completed - ${mission.title}`,
+      description: `Successfully completed the ${mission.title} mission and earned ${mission.points} points!`,
+      points: mission.points,
+      metadata: { 
+        missionId: mission._id,
+        points: mission.points
+      }
+    });
 
     res.json({
       success: true,
       message: 'Mission completed successfully!',
       data: {
         pointsEarned: mission.points,
-        newScore: updatedUser?.score,
-        newRank: updatedUser?.rank,
-        completion
+        newScore: updatedUser?.score || 0,
+        oldRank: oldRank,
+        newRank: user.rank
       }
     });
   } catch (error) {
-    console.error('Submit flag error:', error);
+    console.error('Error submitting flag:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error while submitting flag'
+      message: 'Server error'
     });
   }
 });
@@ -340,6 +314,126 @@ router.post('/', [
     res.status(500).json({
       success: false,
       message: 'Server error while creating mission'
+    });
+  }
+});
+
+// @route   GET /api/missions/:id/completion
+// @desc    Get mission completion details
+// @access  Private
+router.get('/:id/completion', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({
+        success: false,
+        message: 'Unauthorized'
+      });
+      return;
+    }
+
+    const missionCompletion = await MissionCompletion.findOne({
+      userId: req.user._id,
+      missionId: req.params.id
+    });
+
+    if (!missionCompletion) {
+      res.status(404).json({
+        success: false,
+        message: 'Mission completion not found'
+      });
+      return;
+    }
+
+    res.json({
+      success: true,
+      data: {
+        flagSubmitted: missionCompletion.flagSubmitted,
+        completedAt: missionCompletion.completedAt,
+        pointsEarned: missionCompletion.pointsEarned
+      }
+    });
+  } catch (error) {
+    console.error('Get mission completion error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching mission completion'
+    });
+  }
+});
+
+// @route   POST /api/missions/:id/flag
+// @desc    Submit a flag for a mission
+// @access  Private
+router.post('/:id/flag', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({
+        success: false,
+        message: 'Unauthorized'
+      });
+      return;
+    }
+
+    const { flag } = req.body;
+    const mission = await Mission.findById(req.params.id);
+
+    if (!mission) {
+      res.status(404).json({
+        success: false,
+        message: 'Mission not found'
+      });
+      return;
+    }
+
+    // Check if mission is already completed
+    const isCompleted = req.user.completedMissions.includes(mission._id);
+    if (isCompleted) {
+      res.status(400).json({
+        success: false,
+        message: 'Mission already completed'
+      });
+      return;
+    }
+
+    // Save the flag submission whether correct or not
+    await MissionCompletion.findOneAndUpdate(
+      { userId: req.user._id, missionId: mission._id },
+      { 
+        flagSubmitted: flag,
+        completedAt: new Date(),
+        pointsEarned: mission.points
+      },
+      { upsert: true, new: true }
+    );
+
+    if (flag === mission.flag) {
+      // Update user's completed missions and score
+      await User.findByIdAndUpdate(
+        req.user._id,
+        {
+          $addToSet: { completedMissions: mission._id },
+          $inc: { score: mission.points }
+        }
+      );
+
+      res.json({
+        success: true,
+        message: 'Flag correct! Mission completed.',
+        data: {
+          pointsEarned: mission.points
+        }
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: 'Incorrect flag. Keep trying!'
+      });
+    }
+  } catch (error) {
+    console.error('Flag submission error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while submitting flag'
     });
   }
 });
