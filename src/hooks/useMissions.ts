@@ -1,7 +1,6 @@
 
-import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { apiService } from '@/services/api';
+import { supabaseService } from '@/services/supabaseService';
 import { useAuth } from './useAuth';
 
 export function useMissions() {
@@ -9,7 +8,7 @@ export function useMissions() {
 
   return useQuery({
     queryKey: ['missions'],
-    queryFn: () => apiService.getMissions(),
+    queryFn: () => supabaseService.getMissions(),
     enabled: isAuthenticated,
     select: (data) => data.data?.missions || [],
   });
@@ -20,7 +19,7 @@ export function useMissionCompletions() {
 
   return useQuery({
     queryKey: ['mission-completions'],
-    queryFn: () => apiService.getMissionCompletions(),
+    queryFn: () => supabaseService.getMissionCompletions(),
     enabled: isAuthenticated,
     select: (data) => data.data?.completions || [],
   });
